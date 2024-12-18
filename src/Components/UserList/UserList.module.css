@@ -1,0 +1,38 @@
+.maintt {
+  width: 110%;
+}
+.inpsearch {
+  /* margin-right: 5%; */
+  margin-left: 12%;
+  border-radius: 5px;
+  border: 1px solid rgb(210, 214, 218);
+  height: 35px;
+}
+.inpsearch:focus {
+  border-color: rgb(210, 214, 218);
+  outline: none;
+}
+.delicon {
+  font-size: 20px;
+}
+.acct{
+  /* background-color:rgb(226,45,108) ; */
+  border-radius: 50%;
+  
+}
+.inpdate{
+  /* margin-left: -16%; */
+  border-radius: 5px;
+  border: 1px solid rgb(210, 214, 218);
+  width: 220px;
+  height: 35px;
+}
+.inpdate:focus {
+  border-color: rgb(210, 214, 218);
+  outline: none;
+}
+.inpfilter{
+    margin-left: 38%;
+    display: flex; 
+
+}

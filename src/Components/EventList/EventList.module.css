@@ -1,0 +1,103 @@
+.maintt{
+    width: 110%;
+}
+.inpsearch{
+    margin-left: 50%;
+    border-radius: 5px;
+    border: 1px solid rgb(210,214,218)
+}
+.inpsearch:focus {
+    border-color: rgb(210,214,218); 
+    outline: none; 
+  }
+  .inpsearch1{
+    margin-left:16%;
+    border-radius: 5px;
+    border: 1px solid rgb(210,214,218)
+}
+.inpsearch1:focus {
+    border-color: rgb(210,214,218); 
+    outline: none; 
+  }
+
+
+.delicon{
+    font-size: 22px;
+}
+.switchinp{
+    background-color: #ccc !important; /* Default color */
+    /* border-color: #ccc !important; */
+}
+
+.switchinp:checked {
+    background-color: rgb(227,47,110)!important; /* Green color for checked state */
+    border-color: rgb(227,47,110) !important;
+  }
+
+  /* Custom color for the switch button slider */
+  .switchinp:focus {
+    box-shadow: none;
+  }
+  .card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header {
+    background-color: #5468ff;
+    padding: 10px 15px;
+    color: #fff;
+  }
+  
+  .content {
+    padding: 15px;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table td {
+    padding: 10px 5px;
+    vertical-align: top;
+  }
+  
+  .actions {
+    margin-top: 15px;
+    text-align: center;
+  }
+  
+  .action-button {
+    margin: 5px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: #5468ff;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .icon {
+    margin-right: 10px;
+    color: #5468ff;
+  }
+
+  .inpdate{
+    margin-left: 96%;
+    border-radius: 5px;
+    border: 1px solid rgb(210, 214, 218);
+    width: 220px;
+    height: 35px;
+  }
+  .inpdate:focus {
+    border-color: rgb(210, 214, 218);
+    outline: none;
+  }
+  .inpfilter{
+      margin-left: -7%;
+      display: flex; 
+  }

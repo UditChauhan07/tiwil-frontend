@@ -1,0 +1,21 @@
+.logo-img{
+    height: 60px;
+    width: 60%;
+    margin: 0 auto ;
+    border-radius: 10px;
+   
+
+}
+
+.sidenav-header{
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color:rgba(240, 242, 245, 0.959);
+}
+
+/* .givenWidth{
+    width: 270px;
+    border: 1px solid #000;
+} */

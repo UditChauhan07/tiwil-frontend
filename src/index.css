@@ -1,0 +1,50 @@
+.navbar-vertical.navbar-expand-xs{
+    z-index: 1;
+}
+/* Background color for active and inactive tabs */
+.custom-tab-title {
+    
+    padding: 10px 15px;
+    border-radius: 4px;
+    color: rgb(231,55,116);
+  }
+  
+  .nav-tabs .nav-link.active .custom-tab-title {
+    background-color: rgb(231,55,116); /* Active tab background */
+    color: white;
+
+  }
+
+  /* Full-width background color for the active tab */
+.nav-tabs .nav-link.active {
+    background-color: #e91e63; /* Pink color */
+    color: white;
+    border: none; /* Remove default borders */
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+  }
+  
+  /* Extend active tab to cover full width */
+  .nav-tabs {
+    border-bottom: 2px solid #e91e63; /* Match active tab color */
+  }
+  
+  .nav-tabs .nav-link {
+    background-color: transparent; /* Inactive tabs are transparent */
+    color: #e91e63; /* Text color for inactive tabs */
+  }
+  
+  /* Hover effect for inactive tabs */
+  .nav-tabs .nav-link:hover {
+    /* background-color: #e91e63;  */
+    color: white;
+  }
+
+  .society-card {
+    border:none;
+    padding: 20px;
+  }
+
+ 
+  
+  
