@@ -9,14 +9,13 @@ import { MdDelete } from "react-icons/md";
 import { MdVisibility } from "react-icons/md";
 import Button from "react-bootstrap/Button";
 import CommonModal from "../Modal/modal";
-
-// import Form from 'react-bootstrap/Form';
-// import InputGroup from 'react-bootstrap/InputGroup';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Form, InputGroup } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { Card, Row, Col, DatePicker } from "antd";
 import Modal from "react-bootstrap/Modal";
+import { MdModeEditOutline } from "react-icons/md";
+import { GiCancel } from "react-icons/gi";
 // import { getFCMToken } from "../../Utils/FirebaseConfig";
 // import { Select } from "antd";
 import { Autocomplete, TextField, CircularProgress } from "@mui/material";
@@ -27,10 +26,9 @@ function Notification(props) {
   const [modalShow, setModalShow] = useState(false);
   const [modalShowView, setModalShowView] = useState(false);
   const [modalShowDelete, setmodalShowDelete] = useState(false);
-  // const [selectedUsers, setSelectedUsers] = useState([]);
-
   const [formData, setFormData] = useState({
     date: "",
+    time: "",
     title: "",
     description: "",
     type: "", // Default dropdown value
@@ -39,15 +37,14 @@ function Notification(props) {
 
   const [NotifyData, setNotifyData] = useState([]);
   const [UserData, setUserData] = useState([]);
-
   const [NotifyView, setNotifyView] = useState();
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
-
+  const [selectedUsers, setSelectedUsers] = useState([]);
   const [isDateInputVisible, setIsDateInputVisible] = useState(false);
   const [isPublishLaterClicked, setIsPublishLaterClicked] = useState(false);
   const [isUserDropdownVisible, setIsUserDropdownVisible] = useState(false);
-
+  const [loading, setLoading] = useState(true);
 
   const handleShow = () => {
     setModalShow(true);
@@ -129,13 +126,16 @@ function Notification(props) {
 
   const handlePublishForAndSelectChange = (e) => {
     const value = e.target.value;
-    console.log(value)
+    console.log(value);
 
-  // Update publishFor state based on the selected option
-  setFormData((prev) => ({
-    ...prev,
-    publishFor: value === "ChooseUser" ? selectedUsers.map(user => console.log(user)) : value, // If "Choose user" is selected, map selected users' IDs
-  }));
+    // Update publishFor state based on the selected option
+    setFormData((prev) => ({
+      ...prev,
+      publishFor:
+        value === "ChooseUser"
+          ? selectedUsers.map((user) => console.log(user))
+          : value, // If "Choose user" is selected, map selected users' IDs
+    }));
 
     // Update dropdown visibility based on condition
     if (value === "ChooseUser") {
@@ -145,17 +145,15 @@ function Notification(props) {
     }
   };
 
-
   const handleUserSelectChange = (event, newValue) => {
     // console.log(newValue)
     // Update selected users and publishFor state with user IDs when users are selected
-    setSelectedUsers(newValue); 
+    setSelectedUsers(newValue);
     setFormData((prev) => ({
       ...prev,
-      publishFor: newValue.map(user => user.id), // Get selected users' IDs and update publishFor
+      publishFor: newValue.map((user) => user.id), // Get selected users' IDs and update publishFor
     }));
   };
-
 
   const handleSubmit = async (e) => {
     if (validateForm()) {
@@ -165,18 +163,24 @@ function Notification(props) {
 
       const payload = {
         ...formData,
-        time: selectedDate 
-          ? `${selectedDate.getHours().toString().padStart(2, "0")}:${selectedDate.getMinutes().toString().padStart(2, "0")}`
-          : "", // If date is not provided, store an empty string
+        // time: selectedDate
+        //   ? `${selectedDate
+        //       .getHours()
+        //       .toString()
+        //       .padStart(2, "0")}:${selectedDate
+        //       .getMinutes()
+        //       .toString()
+        //       .padStart(2, "0")}`
+        //   : "",
+        status: selectedDate ? "Schedule" : "Sent",
       };
-
 
       try {
         const response = await axios.post(
           `${url}/schedule-Notification`,
           payload
         );
-        console.log("RESPONSE", response)
+        console.log("RESPONSE", response);
         toast.success("Notification send successfully");
       } catch (error) {
         setMessage(error.message || "An error occurred");
@@ -188,10 +192,9 @@ function Notification(props) {
       title: "",
       description: "",
       type: "",
-      publishFor:'',
+      publishFor: "",
     });
-    setIsPublishLaterClicked(false)
-
+    setIsPublishLaterClicked(false);
   };
 
   const PublishLater = () => {
@@ -205,21 +208,23 @@ function Notification(props) {
       try {
         const response = await axios.get(`${url}/get-allnotification`);
         setNotifyData(response.data.notification);
+        setLoading(false);
       } catch (error) {
+        setLoading(false);
         console.log("error in fetching notification", error);
       }
     };
     getnotification();
   }, [handleSubmit]);
 
-  const handleSelectChange = (e) => {
-    const value = e.target.value;
-    if (value === "4") {
-      setIsUserDropdownVisible(true);
-    } else {
-      setIsUserDropdownVisible(false);
-    }
-  };
+  // const handleSelectChange = (e) => {
+  //   const value = e.target.value;
+  //   if (value === "4") {
+  //     setIsUserDropdownVisible(true);
+  //   } else {
+  //     setIsUserDropdownVisible(false);
+  //   }
+  // };
 
   // useEffect(() => {
   //   const sendNotification = async () => {
@@ -252,9 +257,8 @@ function Notification(props) {
 
   //   sendNotification();
   // }, []);
-  const [selectedUsers, setSelectedUsers] = useState([]);
-      // console.log(selectedUsers)
 
+  // console.log(selectedUsers)
 
   const handleChanges = (value) => {
     setSelectedUsers(value);
@@ -391,7 +395,7 @@ function Notification(props) {
                         value={selectedUsers}
                         // onChange={(event, newValue) =>
                         //   setSelectedUsers(newValue)
-                        // } 
+                        // }
                         onChange={handleUserSelectChange}
                         isOptionEqualToValue={(option, value) =>
                           option.id === value.id
@@ -412,16 +416,26 @@ function Notification(props) {
                     <>
                       <div className={`text-center ${Styles.maindateinpp}`}>
                         <p className="text-capitalize text-lg font-weight-bold ">
-                          Please Select Date :
+                          Please Select Date & Time :
                         </p>
                         {isDateInputVisible && (
-                          <input
-                          type="date"
-                          name="date"
-                          value={formData?.date}
-                            onChange={handleChange}
-                            className={`${Styles.inppdates}`}
-                          />
+                          <>
+                            <input
+                              type="date"
+                              name="date"
+                              value={formData?.date}
+                              onChange={handleChange}
+                              className={`${Styles.inppdates}`}
+                            />
+
+                            <input
+                              type="time"
+                              name="time"
+                              value={formData?.time}
+                              onChange={handleChange}
+                              className={`${Styles.inppdates}`}
+                            />
+                          </>
                         )}
                         <div className="text-end">
                           <button
@@ -522,6 +536,23 @@ function Notification(props) {
                             Publish For :
                           </b>
                         </p>
+                        <p>
+                          <b className="text-lg text-center font-weight-bold mb-0">
+                            Status :
+                          </b>
+                        </p>
+                        <p>
+                          <b className="text-lg text-center font-weight-bold mb-0">
+                            Date & Time :
+                          </b>
+                        </p>
+                        {NotifyView?.scheduledAt && (
+                          <p>
+                            <b className="text-lg text-center font-weight-bold mb-0">
+                              ScheduledAt :
+                            </b>
+                          </p>
+                        )}
                       </Col>
                       <Col span={12}>
                         <p>
@@ -537,6 +568,50 @@ function Notification(props) {
                           {/* <b>{NotifyView?.publishFor}</b> */}
                           <b>All Users</b>
                         </p>
+                        <p className="mt-4">
+                          <b>{NotifyView?.status}</b>
+                        </p>
+                        {/* <p>
+                          <b>
+                            {new Date(NotifyView?.createdAt).toLocaleDateString(
+                              "en-GB"
+                            )}
+                          </b>
+                        </p> */}
+                        <p className="mt-4">
+                          <b>
+                            {new Date(NotifyView?.createdAt).toLocaleString(
+                              "en-GB",
+                              {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                second: "2-digit",
+                                hour12: false,
+                              }
+                            )}
+                          </b>
+                        </p>
+                        {NotifyView?.scheduledAt && (
+                          <p className="mt-2">
+                            <b>
+                              {new Date(NotifyView?.scheduledAt).toLocaleString(
+                                "en-GB",
+                                {
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  second: "2-digit",
+                                  hour12: false,
+                                }
+                              )}
+                            </b>
+                          </p>
+                        )}
                       </Col>
                     </Row>
                   </Card>
@@ -574,7 +649,7 @@ function Notification(props) {
       {/* -------MAIN-------- */}
       <div className="container py-4">
         <div className="row">
-          <div className="col-lg-2"></div>
+          <div className="col-lg-2"></div> 
 
           <div className="col-lg-8">
             <div className="container-fluid py-4">
@@ -599,78 +674,119 @@ function Notification(props) {
                       </div>
                     </div>
 
-                    <div className="card-body px-0 pb-2">
-                      <div className="table-responsive p-0 ">
-                        <table className="table align-items-center mb-0">
-                          <thead>
-                            <tr>
-                              <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                Title
-                              </th>
-                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                Description
-                              </th>
-                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                Type
-                              </th>
-                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                publsh for
-                              </th>
-                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                Action
-                              </th>
+                    {loading ? (
+                      <>
+                        <Box
+                          display="flex"
+                          justifyContent="center"
+                          alignItems="center"
+                          height="50vh" // Full viewport height
+                        >
+                          <ThreeCircles
+                            visible={true}
+                            height="80"
+                            width="100"
+                            color="rgb(231,56,116)" // Change the color to your desired color
+                            ariaLabel="three-circles-loading"
+                            wrapperStyle={{}}
+                            wrapperClass=""
+                          />
+                        </Box>
+                      </>
+                    ) : (
+                      <>
+                        <div className="card-body px-0 pb-2">
+                          <div className="table-responsive p-0 ">
+                            <table className="table align-items-center mb-0">
+                              <thead>
+                                <tr>
+                                  <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                    Title
+                                  </th>
+                                  <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Description
+                                  </th>
+                                  <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Type
+                                  </th>
+                                  <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    publsh for
+                                  </th>
+                                  <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Status
+                                  </th>
+                                  <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Action
+                                  </th>
 
-                              <th className="text-secondary opacity-7"></th>
-                            </tr>
-                          </thead>
+                                  <th className="text-secondary opacity-7"></th>
+                                </tr>
+                              </thead>
 
-                          <tbody>
-                            {NotifyData.map((item) => {
-                              return (
-                                <>
-                                  <tr>
-                                    <td>
-                                      <p className="text-xs font-weight-bold mb-0">
-                                        {item.title}
-                                      </p>
-                                    </td>
-                                    <td>
-                                      <p className="text-xs text-center font-weight-bold mb-0">
-                                        {item.description}
-                                      </p>
-                                    </td>
-                                    <td>
-                                      <p className="text-xs text-center font-weight-bold mb-0">
-                                        {item.type}
-                                      </p>
-                                    </td>
-                                    <td>
-                                      <p className="text-xs text-center font-weight-bold mb-0">
-                                        All Users
-                                      </p>
-                                    </td>
-                                    <td className="align-middle text-center">
-                                      <span>
-                                        <MdVisibility
-                                          className={`${Styles.delicon1}`}
-                                          onClick={() => {
-                                            handleShowView(item);
-                                          }}
-                                        />
-                                        <MdDelete
-                                          className={`${Styles.delicon1}`}
-                                          onClick={handleShowDelete}
-                                        />
-                                      </span>
-                                    </td>
-                                  </tr>
-                                </>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
+                              <tbody>
+                                {NotifyData.map((item) => {
+                                  return (
+                                    <>
+                                      <tr>
+                                        <td>
+                                          <p className="text-xs font-weight-bold mb-0">
+                                            {item.title}
+                                          </p>
+                                        </td>
+                                        <td>
+                                          <p className="text-xs text-center font-weight-bold mb-0">
+                                            {item.description}
+                                          </p>
+                                        </td>
+                                        <td>
+                                          <p className="text-xs text-center font-weight-bold mb-0">
+                                            {item.type}
+                                          </p>
+                                        </td>
+                                        <td>
+                                          <p className="text-xs text-center font-weight-bold mb-0">
+                                            All Users
+                                          </p>
+                                        </td>
+                                        <td>
+                                          <p className="text-xs text-center font-weight-bold mb-0">
+                                            {item?.status}
+                                          </p>
+                                        </td>
+                                        <td className="align-middle text-center">
+                                          <span>
+                                            <MdVisibility
+                                              className={`${Styles.delicon1}`}
+                                              onClick={() => {
+                                                handleShowView(item);
+                                              }}
+                                            />
+
+                                            {item.status === "Schedule" && (
+                                              <>
+                                                <MdModeEditOutline
+                                                  className={`${Styles.delicon1}`}
+                                                  onClick={handleShowDelete}
+                                                />
+
+                                                <GiCancel
+                                                  className={`${Styles.delicon1}`}
+                                                  onClick={handleShowDelete}
+                                                />
+                                              </>
+                                            )}
+                                          </span>
+                                        </td>
+                                      </tr>
+                                    </>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

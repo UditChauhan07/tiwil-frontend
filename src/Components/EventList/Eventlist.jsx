@@ -13,19 +13,25 @@ import Tabs from "react-bootstrap/Tabs";
 import { TbCirclesRelation } from "react-icons/tb";
 import Carousel from "react-bootstrap/Carousel";
 import DatePicker from "react-datepicker";
+import Box from "@mui/material/Box";
+import { ThreeCircles } from "react-loader-spinner";
+
 
 function Eventlist(props) {
   const [Events, setEvents] = useState([]);
   const [modalShow, setModalShow] = useState(false);
   const [invitedUser, setinvitedUser] = useState();
   const [wishlist, setWishlist] = useState([]);
+   const [loading, setLoading] = useState(true);
 
   const GetEvents = async () => {
     try {
-      const response = await axios.get(`${url}/get-allevents`);
+      const response = await axios.get(`${url}/get-allevents`); 
       setEvents(response.data.events);
+      setLoading(false);
     } catch (error) {
       console.log("Error in fetching events", error);
+      setLoading(false);
     }
   };
 
@@ -649,7 +655,32 @@ function Eventlist(props) {
                       </div>
                     </div>
 
-                    <div className="card-body px-0 pb-2">
+                    {
+                      loading ? 
+                      (
+                        <>
+                         <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        height="50vh" // Full viewport height
+                      >
+                        <ThreeCircles
+                          visible={true}
+                          height="80"
+                          width="100"
+                          color="rgb(231,56,116)" // Change the color to your desired color
+                          ariaLabel="three-circles-loading"
+                          wrapperStyle={{}}
+                          wrapperClass=""
+                        />
+                      </Box>
+
+                        </>
+                      ) : 
+                      (
+                        <>
+                           <div className="card-body px-0 pb-2">
                       <div className="table-responsive p-0 ">
                         <table className="table align-items-center mb-0">
                           <thead>
@@ -745,6 +776,13 @@ function Eventlist(props) {
                         {/* PAGINATION  */}
                       </div>
                     </div>
+                        
+                        
+                        </>
+                      )
+                    }
+
+                 
                   </div>
                 </div>
               </div>
