@@ -26,6 +26,20 @@ function Notification(props) {
   const [modalShow, setModalShow] = useState(false);
   const [modalShowView, setModalShowView] = useState(false);
   const [modalShowDelete, setmodalShowDelete] = useState(false);
+  const [modalShowEdit, setmodalShowEdit] = useState(false);
+  const [NotifyView, setNotifyView] = useState();
+  const [NotifyEdit, setNotifyEdit] = useState();
+  const [NotifyCancel, setNotifyCancel] = useState();
+  const [NotifyData, setNotifyData] = useState([]);
+  const [UserData, setUserData] = useState([]);
+  const [errors, setErrors] = useState({});
+  const [message, setMessage] = useState("");
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedUsersEdit, setSelectedUsersEdit] = useState([]);
+  const [isDateInputVisible, setIsDateInputVisible] = useState(false);
+  const [isPublishLaterClicked, setIsPublishLaterClicked] = useState(false);
+  const [isUserDropdownVisible, setIsUserDropdownVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     date: "",
     time: "",
@@ -34,17 +48,16 @@ function Notification(props) {
     type: "", // Default dropdown value
     publishFor: "", // Empty by default
   });
+  const [formDataEdit, setFormDataEdit] = useState({
+    date: "",
+    time: "",
+    title: "",
+    description: "",
+    type: "", // Default dropdown value
+    publishFor: "", // Empty by default
+  });
 
-  const [NotifyData, setNotifyData] = useState([]);
-  const [UserData, setUserData] = useState([]);
-  const [NotifyView, setNotifyView] = useState();
-  const [errors, setErrors] = useState({});
-  const [message, setMessage] = useState("");
-  const [selectedUsers, setSelectedUsers] = useState([]);
-  const [isDateInputVisible, setIsDateInputVisible] = useState(false);
-  const [isPublishLaterClicked, setIsPublishLaterClicked] = useState(false);
-  const [isUserDropdownVisible, setIsUserDropdownVisible] = useState(false);
-  const [loading, setLoading] = useState(true);
+  // console.log("FORMDATA", formDataEdit)
 
   const handleShow = () => {
     setModalShow(true);
@@ -54,8 +67,13 @@ function Notification(props) {
     setNotifyView(item);
     setModalShowView(true);
   };
-  const handleShowDelete = () => {
+  const handleShowDelete = (item) => {
+    setNotifyCancel(item)
     setmodalShowDelete(true);
+  };
+  const handleShowEdit = (item) => {
+    setNotifyEdit(item);
+    setmodalShowEdit(true);
   };
 
   const handleClose = () => {
@@ -66,8 +84,27 @@ function Notification(props) {
   const handleCloseView = () => {
     setModalShowView(false);
   };
-  const handleCloseDelete = () => {
+  const handleClosecancelbtn = () => {
     setmodalShowDelete(false);
+  }
+
+  const handleCloseCancel = async (e) => {
+    setmodalShowDelete(false);
+    // e.preventDefault();
+    try {
+      const response = await axios.put(
+        `${url}/Update-Notification-status/${NotifyCancel?._id}`,
+        { status: "cancel" }
+      );
+      console.log("RESPONSE", response);
+      toast.success("Notification Status Update Successfully");
+      getnotification();
+    } catch (error) {
+      setMessage(error.message || "An error occurred");
+    }
+  };
+  const handleCloseEdit = () => {
+    setmodalShowEdit(false);
   };
 
   const styles = {
@@ -124,6 +161,19 @@ function Notification(props) {
     }));
   };
 
+  const handleChangeEdit = (e) => {
+    const { name, value } = e.target;
+    setFormDataEdit((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
+  };
+
   const handlePublishForAndSelectChange = (e) => {
     const value = e.target.value;
     console.log(value);
@@ -145,11 +195,41 @@ function Notification(props) {
     }
   };
 
+  const handlePublishForAndSelectChangeEdit = (e) => {
+    const value = e.target.value;
+    console.log(value);
+
+    // Update publishFor state based on the selected option
+    setFormDataEdit((prev) => ({
+      ...prev,
+      publishFor:
+        value === "ChooseUser"
+          ? selectedUsersEdit.map((user) => console.log(user))
+          : value, // If "Choose user" is selected, map selected users' IDs
+    }));
+
+    // Update dropdown visibility based on condition
+    if (value === "ChooseUser") {
+      setIsUserDropdownVisible(true);
+    } else {
+      setIsUserDropdownVisible(false);
+    }
+  };
+
   const handleUserSelectChange = (event, newValue) => {
     // console.log(newValue)
     // Update selected users and publishFor state with user IDs when users are selected
     setSelectedUsers(newValue);
     setFormData((prev) => ({
+      ...prev,
+      publishFor: newValue.map((user) => user.id), // Get selected users' IDs and update publishFor
+    }));
+  };
+  const handleUserSelectChangeEdit = (event, newValue) => {
+    // console.log(newValue)
+    // Update selected users and publishFor state with user IDs when users are selected
+    setSelectedUsersEdit(newValue);
+    setFormDataEdit((prev) => ({
       ...prev,
       publishFor: newValue.map((user) => user.id), // Get selected users' IDs and update publishFor
     }));
@@ -182,6 +262,7 @@ function Notification(props) {
         );
         console.log("RESPONSE", response);
         toast.success("Notification send successfully");
+        getnotification();
       } catch (error) {
         setMessage(error.message || "An error occurred");
       }
@@ -197,6 +278,30 @@ function Notification(props) {
     setIsPublishLaterClicked(false);
   };
 
+  const handleSubmitEdit = async (e) => {
+    setmodalShowEdit(false);
+    e.preventDefault();
+    try {
+      const response = await axios.put(
+        `${url}/edit-Notification/${NotifyEdit?._id}`,
+        formDataEdit
+      );
+      console.log("RESPONSE", response);
+      toast.success("Notification Update Successfully");
+      getnotification();
+    } catch (error) {
+      setMessage(error.message || "An error occurred");
+    }
+
+    setFormDataEdit({
+      title: "",
+      description: "",
+      type: "",
+      publishFor: "",
+    });
+    setIsPublishLaterClicked(false);
+  };
+
   const PublishLater = () => {
     // setModalShow(false);
     setIsDateInputVisible(true);
@@ -204,19 +309,18 @@ function Notification(props) {
   };
 
   useEffect(() => {
-    const getnotification = async () => {
-      try {
-        const response = await axios.get(`${url}/get-allnotification`);
-        setNotifyData(response.data.notification);
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-        console.log("error in fetching notification", error);
-      }
-    };
     getnotification();
-  }, [handleSubmit]);
-
+  }, []);
+  const getnotification = async () => {
+    try {
+      const response = await axios.get(`${url}/get-allnotification`);
+      setNotifyData(response.data.notification);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log("error in fetching notification", error);
+    }
+  };
   // const handleSelectChange = (e) => {
   //   const value = e.target.value;
   //   if (value === "4") {
@@ -257,12 +361,6 @@ function Notification(props) {
 
   //   sendNotification();
   // }, []);
-
-  // console.log(selectedUsers)
-
-  const handleChanges = (value) => {
-    setSelectedUsers(value);
-  };
 
   // GET ALL USERS
 
@@ -565,8 +663,24 @@ function Notification(props) {
                           <b>{NotifyView?.type}</b>
                         </p>
                         <p>
-                          {/* <b>{NotifyView?.publishFor}</b> */}
-                          <b>All Users</b>
+                          {/* Check if NotifyView?.publishFor is an array */}
+                          {Array.isArray(NotifyView?.publishFor) ? (
+                          <ul style={{ display: 'flex', padding: 0 }}>
+                          {NotifyView?.publishFor.map((value, index) => (
+                            <li
+                              key={index}
+                              style={{ marginRight: '10px', listStyle: 'none',  }}
+                            >
+                              {`${value},`}
+                            </li>
+                          ))}
+                        </ul>
+                          ) : (
+                            // If not an array, display the single value
+                            <span className="text-xs font-weight-bold mb-0">
+                              {NotifyView?.publishFor}
+                            </span>
+                          )}
                         </p>
                         <p className="mt-4">
                           <b>{NotifyView?.status}</b>
@@ -622,22 +736,30 @@ function Notification(props) {
         }
       />
 
-      {/* MODAL FOR DELETE  */}
+      {/* MODAL FOR CANCEL  */}
       <CommonModal
         show={modalShowDelete}
-        handleClose={handleCloseDelete}
+        handleClose={handleClosecancelbtn}
         size="lg"
         body={
           <>
             <div className="container">
               <h5 className="text-center">
-                Are you sure want to Delete this Notification!
+                Are you sure want to Cancel this Notification!
               </h5>
+
               <Modal.Footer className="mt-5">
-                <Button variant="secondary" onClick={handleCloseDelete}>
+                <Button
+                  onClick={handleClosecancelbtn}
+                  className={`btn btn font-weight-bold ${Styles.btnlater}`}
+                >
                   NO
                 </Button>
-                <Button variant="primary" onClick={handleCloseDelete}>
+                <Button
+                  onClick={handleCloseCancel}
+                  className={`btn btn ${Styles.btnsucess}`}
+              
+                >
                   YES
                 </Button>
               </Modal.Footer>
@@ -646,10 +768,201 @@ function Notification(props) {
         }
       />
 
+      {/* MODAL FOR EDIT  */}
+      <CommonModal
+        show={modalShowEdit}
+        handleClose={handleCloseEdit}
+        size="lg"
+        body={
+          <>
+            <>
+              <div
+                style={{
+                  maxWidth: "980px",
+                  margin: "0px auto",
+                  fontFamily: "Arial, sans-serif",
+                }}
+              >
+                <div style={styles.card}>
+                  <div style={styles.header}>
+                    <h5 style={{ color: "#fff", margin: 0 }}>
+                      Edit Notification
+                    </h5>
+                  </div>
+                  <div className="container">
+                    <p className="text-capitalize text-lg font-weight-bold mt-2">
+                      Title
+                    </p>
+                    <InputGroup className="mb-2">
+                      <Form.Control
+                        name="title"
+                        aria-describedby="inputGroup-sizing-default"
+                        placeholder="Please enter title"
+                        defaultValue={NotifyEdit?.title}
+                        // value={formData.title}
+                        onChange={handleChangeEdit}
+                      />
+                    </InputGroup>
+                    {errors.title && (
+                      <span className="text-danger">{errors.title}</span>
+                    )}
+                    <p className="text-capitalize text-lg font-weight-bold ">
+                      Description
+                    </p>
+                    <InputGroup className="mb-2">
+                      <Form.Control
+                        name="description"
+                        as="textarea"
+                        aria-label="With textarea"
+                        placeholder="description..."
+                        defaultValue={NotifyEdit?.description}
+                        // value={formData.description}
+                        onChange={handleChangeEdit}
+                      />
+                    </InputGroup>
+                    {errors.description && (
+                      <span className="text-danger">{errors.description}</span>
+                    )}
+
+                    <p className="text-capitalize text-lg font-weight-bold ">
+                      Select Type
+                    </p>
+                    <InputGroup className="mb-2">
+                      <Form.Select
+                        aria-label="Default select example"
+                        name="type"
+                        value={
+                          formDataEdit?.type
+                            ? formDataEdit?.type
+                            : NotifyEdit?.type
+                        }
+                        onChange={handleChangeEdit}
+                      >
+                        <option>Please select type</option>
+                        <option value="App upgrade">App upgrade</option>
+                        <option value="Discount">Discount</option>
+                        <option value="EventType">EventType</option>
+                        <option value="Others">Others</option>
+                      </Form.Select>
+                    </InputGroup>
+                    {errors.type && (
+                      <span className="text-danger">{errors.type}</span>
+                    )}
+
+                    <p className="text-capitalize text-lg font-weight-bold ">
+                      Publish For
+                    </p>
+                    <InputGroup className="mb-4">
+                      <Form.Select
+                        name="publishFor"
+                        aria-label="Default select example"
+                        onChange={handlePublishForAndSelectChangeEdit}
+                      >
+                        <option>Please select publish </option>
+                        <option value="allusers">All Users</option>
+                        <option value="eventowner">Event Owners</option>
+                        <option value="ChooseUser">Choose user</option>
+                      </Form.Select>
+                    </InputGroup>
+                    {errors.publishFor && (
+                      <span className="text-danger">{errors.publishFor}</span>
+                    )}
+
+                    {isUserDropdownVisible && (
+                      <>
+                        <p className="text-capitalize text-lg font-weight-bold ">
+                          Select User :
+                        </p>
+
+                        <Autocomplete
+                          multiple
+                          options={UserData.map((item) => ({
+                            id: item._id, // Unique identifier
+                            name: item.name, // Display value
+                          }))}
+                          getOptionLabel={(option) => option.name} // Use 'name' field for display
+                          value={selectedUsersEdit}
+                          // onChange={(event, newValue) =>
+                          //   setSelectedUsers(newValue)
+                          // }
+                          onChange={handleUserSelectChangeEdit}
+                          isOptionEqualToValue={(option, value) =>
+                            option.id === value.id
+                          } // Match by 'id'
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Select Users"
+                              placeholder="Search..."
+                              variant="outlined"
+                            />
+                          )}
+                        />
+                      </>
+                    )}
+
+                    <>
+                      <div className={`text-center ${Styles.maindateinpp}`}>
+                        <p className="text-capitalize text-lg font-weight-bold ">
+                          Update Date & Time :
+                        </p>
+
+                        <>
+                          <input
+                            type="date"
+                            name="date"
+                            value={
+                              formDataEdit?.date
+                                ? formDataEdit?.date
+                                : NotifyEdit?.date
+                            }
+                            onChange={handleChangeEdit}
+                            className={`${Styles.inppdates}`}
+                          />
+
+                          <input
+                            type="time"
+                            name="time"
+                            value={
+                              formDataEdit?.time
+                                ? formDataEdit?.time
+                                : NotifyEdit?.time
+                            }
+                            onChange={handleChangeEdit}
+                            className={`${Styles.inppdates}`}
+                          />
+                        </>
+                      </div>
+                    </>
+
+                    <div className="text-end">
+                      <button
+                        type="button"
+                        className={`btn btn font-weight-bold ${Styles.btnlater}`}
+                        onClick={PublishLater}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className={`btn btn ${Styles.btnsucess}`}
+                        onClick={handleSubmitEdit}
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          </>
+        }
+      />
+
       {/* -------MAIN-------- */}
       <div className="container py-4">
         <div className="row">
-          <div className="col-lg-2"></div> 
+          <div className="col-lg-2"></div>
 
           <div className="col-lg-8">
             <div className="container-fluid py-4">
@@ -710,7 +1023,7 @@ function Notification(props) {
                                     Type
                                   </th>
                                   <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                    publsh for
+                                    publish for
                                   </th>
                                   <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                     Status
@@ -744,10 +1057,32 @@ function Notification(props) {
                                           </p>
                                         </td>
                                         <td>
-                                          <p className="text-xs text-center font-weight-bold mb-0">
-                                            All Users
-                                          </p>
+                                          {/* Check if item.publishFor is an array */}
+                                          {Array.isArray(item?.publishFor) ? (
+                                            <ul className="list-none">
+                                              {item?.publishFor.map(
+                                                (value, index) => (
+                                                  <li
+                                                    key={index}
+                                                    className="text-xs text-center font-weight-bold mb-0"
+                                                    style={{
+                                                      listStylePosition:
+                                                        "inside", // Make sure bullet is inside the list item
+                                                      textAlign: "center", // Center align the text
+                                                    }}
+                                                  >
+                                                    {value}
+                                                  </li>
+                                                )
+                                              )}
+                                            </ul>
+                                          ) : (
+                                            <p className="text-xs text-center font-weight-bold mb-0">
+                                              {item?.publishFor}
+                                            </p>
+                                          )}
                                         </td>
+
                                         <td>
                                           <p className="text-xs text-center font-weight-bold mb-0">
                                             {item?.status}
@@ -766,12 +1101,16 @@ function Notification(props) {
                                               <>
                                                 <MdModeEditOutline
                                                   className={`${Styles.delicon1}`}
-                                                  onClick={handleShowDelete}
+                                                  onClick={() => {
+                                                    handleShowEdit(item);
+                                                  }}
                                                 />
 
                                                 <GiCancel
                                                   className={`${Styles.delicon1}`}
-                                                  onClick={handleShowDelete}
+                                                  onClick={ () => {
+                                                    handleShowDelete(item)
+                                                  } }
                                                 />
                                               </>
                                             )}
