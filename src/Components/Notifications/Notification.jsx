@@ -68,7 +68,7 @@ function Notification(props) {
     setModalShowView(true);
   };
   const handleShowDelete = (item) => {
-    setNotifyCancel(item)
+    setNotifyCancel(item);
     setmodalShowDelete(true);
   };
   const handleShowEdit = (item) => {
@@ -86,7 +86,7 @@ function Notification(props) {
   };
   const handleClosecancelbtn = () => {
     setmodalShowDelete(false);
-  }
+  };
 
   const handleCloseCancel = async (e) => {
     setmodalShowDelete(false);
@@ -138,10 +138,6 @@ function Notification(props) {
     if (!formData.type) {
       newErrors.type = "Type is required.";
     }
-    // if (!formData.publishFor) {
-    //   newErrors.publishFor = "Publish For is required.";
-    // }
-
     setErrors(newErrors);
 
     // If no errors, return true, else false
@@ -276,6 +272,7 @@ function Notification(props) {
       publishFor: "",
     });
     setIsPublishLaterClicked(false);
+    setIsUserDropdownVisible(false)
   };
 
   const handleSubmitEdit = async (e) => {
@@ -665,16 +662,19 @@ function Notification(props) {
                         <p>
                           {/* Check if NotifyView?.publishFor is an array */}
                           {Array.isArray(NotifyView?.publishFor) ? (
-                          <ul style={{ display: 'flex', padding: 0 }}>
-                          {NotifyView?.publishFor.map((value, index) => (
-                            <li
-                              key={index}
-                              style={{ marginRight: '10px', listStyle: 'none',  }}
-                            >
-                              {`${value},`}
-                            </li>
-                          ))}
-                        </ul>
+                            <ul style={{ display: "flex", padding: 0 }}>
+                              {NotifyView?.publishFor.map((value, index) => (
+                                <li
+                                  key={index}
+                                  style={{
+                                    marginRight: "10px",
+                                    listStyle: "none",
+                                  }}
+                                >
+                                  {`${value},`}
+                                </li>
+                              ))}
+                            </ul>
                           ) : (
                             // If not an array, display the single value
                             <span className="text-xs font-weight-bold mb-0">
@@ -751,14 +751,13 @@ function Notification(props) {
               <Modal.Footer className="mt-5">
                 <Button
                   onClick={handleClosecancelbtn}
-                  className={`btn btn font-weight-bold ${Styles.btnlater}`}
+                  className={`btn btn  ${Styles.btnsucess}`}
                 >
                   NO
                 </Button>
                 <Button
                   onClick={handleCloseCancel}
                   className={`btn btn ${Styles.btnsucess}`}
-              
                 >
                   YES
                 </Button>
@@ -1042,7 +1041,7 @@ function Notification(props) {
                                     <>
                                       <tr>
                                         <td>
-                                          <p className="text-xs font-weight-bold mb-0">
+                                          <p className="text-base font-weight-bold mb-0">
                                             {item.title}
                                           </p>
                                         </td>
@@ -1083,10 +1082,21 @@ function Notification(props) {
                                           )}
                                         </td>
 
-                                        <td>
-                                          <p className="text-xs text-center font-weight-bold mb-0">
-                                            {item?.status}
-                                          </p>
+                                        {/* <td className="align-middle text-center text-sm">
+                                      <span className="badge badge-sm bg-gradient-success">
+                                        {item?.status}
+                                      </span>
+                                    </td> */}
+                                        <td className="align-middle text-center text-sm">
+                                          {item?.status === "Schedule" ? (
+                                            <span className="badge badge-sm bg-gradient-warning">
+                                              {item?.status}
+                                            </span>
+                                          ) : (
+                                            <p className="text-xs text-center font-weight-bold mb-0">
+                                              {item?.status}
+                                            </p>
+                                          )}
                                         </td>
                                         <td className="align-middle text-center">
                                           <span>
@@ -1108,9 +1118,9 @@ function Notification(props) {
 
                                                 <GiCancel
                                                   className={`${Styles.delicon1}`}
-                                                  onClick={ () => {
-                                                    handleShowDelete(item)
-                                                  } }
+                                                  onClick={() => {
+                                                    handleShowDelete(item);
+                                                  }}
                                                 />
                                               </>
                                             )}

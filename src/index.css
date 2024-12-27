@@ -44,7 +44,14 @@
     border:none;
     padding: 20px;
   }
+  .featurr{
+     margin-left: -10%;
+  }
 
- 
+  input[type="radio"]:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
   
   

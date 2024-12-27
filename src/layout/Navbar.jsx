@@ -12,7 +12,7 @@ function Navbar() {
 
   const handlelogout = () =>{
     localStorage.removeItem('AccessToken');
-    navigate('/login')
+    navigate('/')
     toast.success("Logout Successfully");
   }
 
@@ -80,6 +80,14 @@ function Navbar() {
                   <i className="material-icons opacity-10">view_in_ar</i>
                 </div>
                 <span className="nav-link-text ms-1">Notifications</span>
+                </NavLink>
+            </li>
+            <li className="nav-item">
+            <NavLink to="/subscription" className="nav-link text-white">
+                <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                  <i className="material-icons opacity-10">view_in_ar</i>
+                </div>
+                <span className="nav-link-text ms-1">Subscription</span>
                 </NavLink>
             </li>
 

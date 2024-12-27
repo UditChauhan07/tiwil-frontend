@@ -13,6 +13,9 @@ import UserList from "./Components/UserList/UserList";
 import Eventlist from "./Components/EventList/Eventlist";
 import ProtectedRoute from "./Utils/Protectedroute";
 import Notification from "./Components/Notifications/Notification";
+import Subscription from "./Components/Subscription/Subscription";
+import AddSubscription from "./Components/Subscription/AddSubscription";
+import EditSubscription from "./Components/Subscription/EditSubscription";
 
 
 const App = () => {
@@ -20,10 +23,10 @@ const App = () => {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Login />} />
 
           <Route
-            path="/"
+            path="/dashboard"
             element={
               <ProtectedRoute>
                 <Dashboard />
@@ -51,6 +54,30 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <Notification/>
+              </ProtectedRoute>
+            }
+          />
+           <Route
+            path="/subscription"
+            element={
+              <ProtectedRoute>
+                   <Subscription/>
+              </ProtectedRoute>
+            }
+          />
+            <Route
+            path="/add-subscription"
+            element={
+              <ProtectedRoute>
+                   <AddSubscription/>
+              </ProtectedRoute>
+            }
+          />
+           <Route
+            path="/update-subscription"
+            element={
+              <ProtectedRoute>
+                  <EditSubscription/>
               </ProtectedRoute>
             }
           />
