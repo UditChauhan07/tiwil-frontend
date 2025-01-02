@@ -740,7 +740,7 @@ function Notification(props) {
       <CommonModal
         show={modalShowDelete}
         handleClose={handleClosecancelbtn}
-        size="lg"
+        size="md"
         body={
           <>
             <div className="container">

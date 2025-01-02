@@ -788,6 +788,7 @@ function EditSubscription(props) {
                           <button
                             type="button"
                             className={`btn btn font-weight-bold ${Styles.btnlater}`}
+                            onClick={handleShow}
                           >
                             Cancel
                           </button>

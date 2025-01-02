@@ -197,14 +197,14 @@ function Subscription(props) {
                 className={`btn btn font-weight-bold ${Styles.btnlater}`}
                 onClick={handleCloseDelete}
               >
-                Cancel
+                No
               </button>
               <button
                 type="button"
                 className={`btn btn ${Styles.btnsucess}`}
                 onClick={handleSubmit}
               >
-                Submit
+                Yes
               </button>
             </div>
           </div>
