@@ -38,7 +38,6 @@ function Subscription(props) {
   const [modalShowDelete, setModalShowDelete] = useState();
   const [subscriptionDeleteid, setsubscriptionDeleteid] = useState();
   const navigate = useNavigate();
- 
 
   const handleShow = () => {
     navigate("/add-subscription");
@@ -75,7 +74,7 @@ function Subscription(props) {
   };
 
   const handleshowDelete = (item) => {
-    setsubscriptionDeleteid(item)
+    setsubscriptionDeleteid(item);
     setModalShowDelete(true);
   };
 
@@ -84,16 +83,18 @@ function Subscription(props) {
   };
 
   const handleSubmit = async () => {
-     try {
-      const response = await axios.delete(`${url}/delete-subscription/${subscriptionDeleteid}`)
-      console.log(response)
+    try {
+      const response = await axios.delete(
+        `${url}/delete-subscription/${subscriptionDeleteid}`
+      );
+      console.log(response);
       toast.success("Subscription Deleted Successfully!");
-     } catch (error) {
-       console.log("error in deleting the subscription",error)
-     }
-     setModalShowDelete(false);
-     GetAllsubscription();
-  }
+    } catch (error) {
+      console.log("error in deleting the subscription", error);
+    }
+    setModalShowDelete(false);
+    GetAllsubscription();
+  };
 
   return (
     <div>
@@ -162,7 +163,12 @@ function Subscription(props) {
                                 Object.entries(subscriptionView.features).map(
                                   ([key, value]) => (
                                     <li key={key}>
-                                      <b>{key}: </b> {value}
+                                      <b>
+                                        {key.charAt(0).toUpperCase() +
+                                          key.slice(1)}
+                                        :{" "}
+                                      </b>{" "}
+                                      {value}
                                     </li>
                                   )
                                 )}
@@ -187,30 +193,27 @@ function Subscription(props) {
         size="md"
         body={
           <>
-          <div className="container">
-          <h5 className="text-center">
-              Are you sure! Want to delete this Subscription!
-            </h5>
-            <div className="container text-end mt-4">
-              <button
-                type="button"
-                className={`btn btn font-weight-bold ${Styles.btnlater}`}
-                onClick={handleCloseDelete}
-              >
-                No
-              </button>
-              <button
-                type="button"
-                className={`btn btn ${Styles.btnsucess}`}
-                onClick={handleSubmit}
-              >
-                Yes
-              </button>
+            <div className="container">
+              <h5 className="text-center">
+                Are you sure! Want to delete this Subscription!
+              </h5>
+              <div className="container text-end mt-4">
+                <button
+                  type="button"
+                  className={`btn btn font-weight-bold ${Styles.btnlater}`}
+                  onClick={handleCloseDelete}
+                >
+                  No
+                </button>
+                <button
+                  type="button"
+                  className={`btn btn ${Styles.btnsucess}`}
+                  onClick={handleSubmit}
+                >
+                  Yes
+                </button>
+              </div>
             </div>
-          </div>
-           
-            
-           
           </>
         }
       />
@@ -342,7 +345,9 @@ function Subscription(props) {
 
                                         <MdDelete
                                           className={`${Styles.delicon1}`}
-                                          onClick={ () => handleshowDelete(item?._id)}
+                                          onClick={() =>
+                                            handleshowDelete(item?._id)
+                                          }
                                         />
                                       </span>
                                     </td>

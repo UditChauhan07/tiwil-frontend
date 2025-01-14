@@ -16,6 +16,7 @@ import Notification from "./Components/Notifications/Notification";
 import Subscription from "./Components/Subscription/Subscription";
 import AddSubscription from "./Components/Subscription/AddSubscription";
 import EditSubscription from "./Components/Subscription/EditSubscription";
+import PaymentGateway from "./Components/PaymentGateway/PaymentGateway";
 
 
 const App = () => {
@@ -78,6 +79,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                   <EditSubscription/>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payment-gateway"
+            element={
+              <ProtectedRoute>
+                 <PaymentGateway/>
               </ProtectedRoute>
             }
           />
