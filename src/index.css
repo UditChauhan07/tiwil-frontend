@@ -53,5 +53,24 @@
     box-shadow: none;
   }
 
+
+  .modal-content-scrollable::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+  }
+  
+  .modal-content-scrollable::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Background of the scrollbar track */
+    border-radius: 4px; /* Radius for the track */
+  }
+  
+  .modal-content-scrollable::-webkit-scrollbar-thumb {
+    background: #c0c0c0; /* Scrollbar color */
+    border-radius: 4px; /* Rounded scrollbar */
+  }
+  
+  .modal-content-scrollable::-webkit-scrollbar-thumb:hover {
+    background: #a0a0a0; /* Darker scrollbar on hover */
+  }
+
   
   

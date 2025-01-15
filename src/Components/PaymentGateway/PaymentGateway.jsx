@@ -47,7 +47,7 @@ function PaymentForm() {
       const response = await axios.post(
         "http://localhost:3839/create-payment-intent",
         {
-          amount: 1000,
+          amount: 1500,
         }
       );
       const cardNumberElement = elements.getElement(CardNumberElement);
@@ -68,6 +68,12 @@ function PaymentForm() {
       } else if (paymentResult.paymentIntent.status === "succeeded") {
         setError(null);
         setSuccess(true);
+        await axios.post("http://localhost:3839/save-payment-details", {
+          name: "Dummy",
+          status: paymentResult?.paymentIntent?.status,
+          paymentId: paymentResult?.paymentIntent?.id,
+          amount: 1500,
+        });
       }
     } catch (err) {
       // Handle errors

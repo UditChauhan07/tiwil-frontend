@@ -104,6 +104,7 @@ function Subscription(props) {
       <CommonModal
         show={modalShow}
         handleClose={handleClose}
+     
         size="lg"
         body={
           <>
@@ -112,6 +113,8 @@ function Subscription(props) {
                 maxWidth: "980px",
                 margin: "0px auto",
                 fontFamily: "Arial, sans-serif",
+                height: "450px", 
+                // overflowY: "auto",
               }}
             >
               <div style={styles.card}>
@@ -120,7 +123,13 @@ function Subscription(props) {
                     Subscription Details
                   </h5>
                 </div>
-                <div className="container">
+                <div className="container modal-content-scrollable " style={{
+                maxWidth: "980px",
+                margin: "0px auto",
+                fontFamily: "Arial, sans-serif",
+                height: "400px", 
+                overflowY: "auto",
+              }}>
                   <Card className="society-card">
                     <Row gutter={[16, 16]}>
                       <Col span={12}>

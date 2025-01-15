@@ -16,17 +16,16 @@ import DatePicker from "react-datepicker";
 import Box from "@mui/material/Box";
 import { ThreeCircles } from "react-loader-spinner";
 
-
 function Eventlist(props) {
   const [Events, setEvents] = useState([]);
   const [modalShow, setModalShow] = useState(false);
   const [invitedUser, setinvitedUser] = useState();
   const [wishlist, setWishlist] = useState([]);
-   const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   const GetEvents = async () => {
     try {
-      const response = await axios.get(`${url}/get-allevents`); 
+      const response = await axios.get(`${url}/get-allevents`);
       setEvents(response.data.events);
       setLoading(false);
     } catch (error) {
@@ -232,12 +231,7 @@ function Eventlist(props) {
     return matches;
   });
 
-  // console.log(filteredResults);
-
   // Filter the events based on the search term
-  //  const filteredEvents = filteredResults.filter((item) =>
-  //   item.data.eventType.toLowerCase().includes(searchTermEvent.toLowerCase())
-  // );
 
   const filteredEvents = filteredResults.filter((item) => {
     // Filter by eventType (search term)
@@ -254,7 +248,24 @@ function Eventlist(props) {
     return matchesEventType && matchesDateRange;
   });
 
-  console.log(filteredEvents);
+  // pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
+
+  // Calculate the indexes of the items to be displayed on the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentData = filteredEvents.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredEvents.length / itemsPerPage);
+
+  // Function to handle page change
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  //  console.log(currentData)
 
   return (
     <div>
@@ -271,336 +282,354 @@ function Eventlist(props) {
               maxWidth: "980px",
               margin: "20px auto",
               fontFamily: "Arial, sans-serif",
+              height: "400px",
             }}
           >
-            <div style={styles.card}>
-              <div style={styles.header}>
-                <h5 style={{ color: "#fff", margin: 0 }}>Event Details</h5>
-              </div>
-              <div style={styles.content}>
-                <table style={styles.table}>
-                  <tbody>
-                    <tr>
-                      <td className="text-uppercase  text-base font-weight-bolder opacity-8">
-                        <FaUser style={styles.icon} />
-                        Name
-                      </td>
-                      <td
-                        style={{
-                          color: "rgb(231,55,115)",
-                        }}
-                        className="text-uppercase  text-xs font-weight-bolder opacity-12"
-                      >
-                        {invitedUser?.name ? invitedUser?.name : "--"}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="text-uppercase  text-base font-weight-bolder opacity-8">
-                        <FaHashtag style={styles.icon} />
-                        Event Type
-                      </td>
-                      <td
-                        style={{
-                          color: "rgb(231,55,115)",
-                        }}
-                        className="text-uppercase  text-xs font-weight-bolder opacity-12"
-                      >
-                        {invitedUser?.eventType ? invitedUser?.eventType : "--"}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="text-uppercase  text-base font-weight-bolder opacity-8">
-                        <TbCirclesRelation style={styles.icon} />
-                        Relation Type
-                      </td>
-                      <td
-                        style={{
-                          color: "rgb(231,55,115)",
-                        }}
-                        className="text-uppercase  text-xs font-weight-bolder opacity-12"
-                      >
-                        {invitedUser?.relationType
-                          ? invitedUser?.relationType
-                          : "--"}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="text-uppercase  text-base font-weight-bolder opacity-8">
-                        <FaMapMarkerAlt style={styles.icon} />
-                        Location
-                      </td>
-                      <td
-                        style={{
-                          color: "rgb(231,55,115)",
-                        }}
-                        className="text-uppercase  text-xs font-weight-bolder opacity-12"
-                      >
-                        {invitedUser?.location ? invitedUser?.location : "--"}
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td className="text-uppercase  text-base font-weight-bolder opacity-8">
-                        <MdLocationCity style={styles.icon} />
-                        Date
-                      </td>
-
-                      <td
-                        style={{
-                          color: "rgb(231,55,115)",
-                        }}
-                        className="text-uppercase  text-xs font-weight-bolder opacity-12"
-                      >
-                        {invitedUser?.dob
-                          ? formatDate(invitedUser?.dob)
-                          : "--" || invitedUser?.anniversaryDate
-                          ? formatDate(invitedUser?.anniversaryDate)
-                          : "--"}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <Tabs
-              defaultActiveKey="home"
-              id="fill-tab-example"
-              className="mb-3 mt-4"
-              fill
+            <div
+              className="container modal-content-scrollable "
+              style={{
+                maxWidth: "980px",
+                margin: "0px auto",
+                fontFamily: "Arial, sans-serif",
+                height: "400px",
+                overflowY: "auto",
+              }}
             >
-              {/* WISHLIST TAB  */}
-              <Tab
-                eventKey="home"
-                title={<span className="custom-tab-title">Wishlist Items</span>}
-              >
-                <div style={styles.card} className="mt-4">
-                  <div style={styles.header}>
-                    <h5 style={{ color: "#fff", margin: 0 }}>
-                      Wishlist Details
-                    </h5>
-                  </div>
-                  <div style={styles.content}>
-                    <table
-                      style={styles.table}
-                      className="table align-items-center mb-0"
-                    >
-                      <thead>
-                        <tr>
-                          <th className="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ">
-                            GiftName
-                          </th>
-                          <th className="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">
-                            Price
-                          </th>
-                          <th className="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                            Desired Rate
-                          </th>
-                          <th className="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                            Product Link
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="mt-4">
-                        {wishlist?.length > 0 ? (
-                          <>
-                            {wishlist?.map((ele) => {
-                              return (
-                                <>
-                                  <tr>
-                                    <td>
-                                      <div className="d-flex px-2 py-1">
-                                        <div>
-                                          <img
-                                            src={`${url}${ele.image}`}
-                                            className="avatar avatar-sm me-3 border-radius-lg"
-                                            alt="user1"
-                                          />
-                                        </div>
-                                        <div className="d-flex flex-column justify-content-center">
-                                          <p className="text-xs font-weight-bold text-secondary mb-0">
-                                            {ele?.giftname}
-                                          </p>
-                                        </div>
-                                      </div>
-                                    </td>
-
-                                    <td className="">
-                                      <p className="text-xs font-weight-bold text-secondary mb-0">
-                                        {ele?.price}
-                                      </p>
-                                    </td>
-                                    <td className="">
-                                      <p className="text-xs text-center font-weight-bold text-secondary mb-0">
-                                        {`${ele?.desiredRate}%`}
-                                      </p>
-                                    </td>
-                                    <td className="">
-                                      <p className="text-xs text-center font-weight-bold text-secondary mb-0">
-                                        {ele?.productLink}
-                                      </p>
-                                    </td>
-                                  </tr>
-                                </>
-                              );
-                            })}
-                          </>
-                        ) : (
-                          <tr>
-                            <td colSpan="4" className="text-center ">
-                              <p className="text-base font-weight-bold text-secondary mb-0 mt-3">
-                                No Wishlist Found!
-                              </p>
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
+              <div style={styles.card}>
+                <div style={styles.header}>
+                  <h5 style={{ color: "#fff", margin: 0 }}>Event Details</h5>
                 </div>
-              </Tab>
-              {/* INVITED USERS TAB  */}
-              <Tab
-                eventKey="profile"
-                title={<span className="custom-tab-title">Invited Users</span>}
+                <div style={styles.content}>
+                  <table style={styles.table}>
+                    <tbody>
+                      <tr>
+                        <td className="text-uppercase  text-base font-weight-bolder opacity-8">
+                          <FaUser style={styles.icon} />
+                          Name
+                        </td>
+                        <td
+                          style={{
+                            color: "rgb(231,55,115)",
+                          }}
+                          className="text-uppercase  text-xs font-weight-bolder opacity-12"
+                        >
+                          {invitedUser?.name ? invitedUser?.name : "--"}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="text-uppercase  text-base font-weight-bolder opacity-8">
+                          <FaHashtag style={styles.icon} />
+                          Event Type
+                        </td>
+                        <td
+                          style={{
+                            color: "rgb(231,55,115)",
+                          }}
+                          className="text-uppercase  text-xs font-weight-bolder opacity-12"
+                        >
+                          {invitedUser?.eventType
+                            ? invitedUser?.eventType
+                            : "--"}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="text-uppercase  text-base font-weight-bolder opacity-8">
+                          <TbCirclesRelation style={styles.icon} />
+                          Relation Type
+                        </td>
+                        <td
+                          style={{
+                            color: "rgb(231,55,115)",
+                          }}
+                          className="text-uppercase  text-xs font-weight-bolder opacity-12"
+                        >
+                          {invitedUser?.relationType
+                            ? invitedUser?.relationType
+                            : "--"}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="text-uppercase  text-base font-weight-bolder opacity-8">
+                          <FaMapMarkerAlt style={styles.icon} />
+                          Location
+                        </td>
+                        <td
+                          style={{
+                            color: "rgb(231,55,115)",
+                          }}
+                          className="text-uppercase  text-xs font-weight-bolder opacity-12"
+                        >
+                          {invitedUser?.location ? invitedUser?.location : "--"}
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td className="text-uppercase  text-base font-weight-bolder opacity-8">
+                          <MdLocationCity style={styles.icon} />
+                          Date
+                        </td>
+
+                        <td
+                          style={{
+                            color: "rgb(231,55,115)",
+                          }}
+                          className="text-uppercase  text-xs font-weight-bolder opacity-12"
+                        >
+                          {invitedUser?.dob
+                            ? formatDate(invitedUser?.dob)
+                            : "--" || invitedUser?.anniversaryDate
+                            ? formatDate(invitedUser?.anniversaryDate)
+                            : "--"}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <Tabs
+                defaultActiveKey="home"
+                id="fill-tab-example"
+                className="mb-3 mt-4"
+                fill
               >
-                <div style={styles.card} className="mt-4">
-                  <div style={styles.header}>
-                    <h5 style={{ color: "#fff", margin: 0 }}>
-                      InvitedUser Details
-                    </h5>
-                  </div>
-                  <div style={styles.content}>
-                    <table
-                      style={styles.table}
-                      className="table align-items-center mb-0"
-                    >
-                      <thead>
-                        <tr>
-                          <th className="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ">
-                            Image
-                          </th>
-                          <th className="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">
-                            Name
-                          </th>
-                          <th className="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                            Phone No
-                          </th>
-                          <th className="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
-                            Status
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="mt-4">
-                        {invitedUser?.invitedUsers &&
-                        invitedUser.invitedUsers.length > 0 ? (
-                          invitedUser.invitedUsers.map((item, index) => (
-                            <tr key={index}>
-                              <td className="">
-                                <div>
-                                  <img
-                                    src={`${url}${item?.image}`}
-                                    className="avatar avatar-sm me-3 border-radius-lg"
-                                    alt="user1"
-                                  />
-                                </div>
-                              </td>
-                              <td className="">
-                                <p className="text-xs font-weight-bold text-secondary mb-0">
-                                  {item?.name}
-                                </p>
-                              </td>
-                              <td className="">
-                                <p className="text-xs text-center font-weight-bold text-secondary mb-0">
-                                  {item?.phoneno}
-                                </p>
-                              </td>
-                              <td className="">
-                                <p className="text-xs text-center font-weight-bold text-secondary mb-0">
-                                  {item?.status}
+                {/* WISHLIST TAB  */}
+                <Tab
+                  eventKey="home"
+                  title={
+                    <span className="custom-tab-title">Wishlist Items</span>
+                  }
+                >
+                  <div style={styles.card} className="mt-4">
+                    <div style={styles.header}>
+                      <h5 style={{ color: "#fff", margin: 0 }}>
+                        Wishlist Details
+                      </h5>
+                    </div>
+                    <div style={styles.content}>
+                      <table
+                        style={styles.table}
+                        className="table align-items-center mb-0"
+                      >
+                        <thead>
+                          <tr>
+                            <th className="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ">
+                              GiftName
+                            </th>
+                            <th className="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">
+                              Price
+                            </th>
+                            <th className="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                              Desired Rate
+                            </th>
+                            <th className="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                              Product Link
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="mt-4">
+                          {wishlist?.length > 0 ? (
+                            <>
+                              {wishlist?.map((ele) => {
+                                return (
+                                  <>
+                                    <tr>
+                                      <td>
+                                        <div className="d-flex px-2 py-1">
+                                          <div>
+                                            <img
+                                              src={`${url}${ele.image}`}
+                                              className="avatar avatar-sm me-3 border-radius-lg"
+                                              alt="user1"
+                                            />
+                                          </div>
+                                          <div className="d-flex flex-column justify-content-center">
+                                            <p className="text-xs font-weight-bold text-secondary mb-0">
+                                              {ele?.giftname}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </td>
+
+                                      <td className="">
+                                        <p className="text-xs font-weight-bold text-secondary mb-0">
+                                          {ele?.price}
+                                        </p>
+                                      </td>
+                                      <td className="">
+                                        <p className="text-xs text-center font-weight-bold text-secondary mb-0">
+                                          {`${ele?.desiredRate}%`}
+                                        </p>
+                                      </td>
+                                      <td className="">
+                                        <p className="text-xs text-center font-weight-bold text-secondary mb-0">
+                                          {ele?.productLink}
+                                        </p>
+                                      </td>
+                                    </tr>
+                                  </>
+                                );
+                              })}
+                            </>
+                          ) : (
+                            <tr>
+                              <td colSpan="4" className="text-center ">
+                                <p className="text-base font-weight-bold text-secondary mb-0 mt-3">
+                                  No Wishlist Found!
                                 </p>
                               </td>
                             </tr>
-                          ))
-                        ) : (
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </Tab>
+                {/* INVITED USERS TAB  */}
+                <Tab
+                  eventKey="profile"
+                  title={
+                    <span className="custom-tab-title">Invited Users</span>
+                  }
+                >
+                  <div style={styles.card} className="mt-4">
+                    <div style={styles.header}>
+                      <h5 style={{ color: "#fff", margin: 0 }}>
+                        InvitedUser Details
+                      </h5>
+                    </div>
+                    <div style={styles.content}>
+                      <table
+                        style={styles.table}
+                        className="table align-items-center mb-0"
+                      >
+                        <thead>
                           <tr>
-                            <td colSpan="4" className="text-center ">
-                              <p className="text-base font-weight-bold text-secondary mb-0 mt-3">
-                                No Invitedusers Found!
-                              </p>
-                            </td>
+                            <th className="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ">
+                              Image
+                            </th>
+                            <th className="text-uppercase text-secondary text-xs font-weight-bolder opacity-7 ps-2">
+                              Name
+                            </th>
+                            <th className="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                              Phone No
+                            </th>
+                            <th className="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">
+                              Status
+                            </th>
                           </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </Tab>
-              {/* Events images tab  */}
-              <Tab
-                eventKey="longer-tab"
-                title={<span className="custom-tab-title">Event Images</span>}
-              >
-                <div style={styles.card} className="mt-4">
-                  <div style={styles.header}>
-                    <h5 style={{ color: "#fff", margin: 0 }}>
-                      Event Images List
-                    </h5>
-                  </div>
-                  <div style={styles.content}>
-                    {invitedUser?.eventImages.length > 0 ? (
-                      <>
-                        <Carousel>
-                          {invitedUser?.eventImages &&
-                          invitedUser?.eventImages.length > 0
-                            ? invitedUser?.eventImages.map((image, index) => {
-                                return (
-                                  <Carousel.Item key={index}>
+                        </thead>
+                        <tbody className="mt-4">
+                          {invitedUser?.invitedUsers &&
+                          invitedUser.invitedUsers.length > 0 ? (
+                            invitedUser.invitedUsers.map((item, index) => (
+                              <tr key={index}>
+                                <td className="">
+                                  <div>
                                     <img
-                                      className="d-block w-100"
-                                      src={`${url}/${image}`}
-                                      alt={`Slide ${index + 1}`}
-                                      style={{
-                                        height: "300px",
-                                        objectFit: "cover",
-                                      }} // Adjust styles as needed
+                                      src={`${url}${item?.image}`}
+                                      className="avatar avatar-sm me-3 border-radius-lg"
+                                      alt="user1"
                                     />
-                                    {/* <Carousel.Caption>
+                                  </div>
+                                </td>
+                                <td className="">
+                                  <p className="text-xs font-weight-bold text-secondary mb-0">
+                                    {item?.name}
+                                  </p>
+                                </td>
+                                <td className="">
+                                  <p className="text-xs text-center font-weight-bold text-secondary mb-0">
+                                    {item?.phoneno}
+                                  </p>
+                                </td>
+                                <td className="">
+                                  <p className="text-xs text-center font-weight-bold text-secondary mb-0">
+                                    {item?.status}
+                                  </p>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="4" className="text-center ">
+                                <p className="text-base font-weight-bold text-secondary mb-0 mt-3">
+                                  No Invitedusers Found!
+                                </p>
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </Tab>
+                {/* Events images tab  */}
+                <Tab
+                  eventKey="longer-tab"
+                  title={<span className="custom-tab-title">Event Images</span>}
+                >
+                  <div style={styles.card} className="mt-4">
+                    <div style={styles.header}>
+                      <h5 style={{ color: "#fff", margin: 0 }}>
+                        Event Images List
+                      </h5>
+                    </div>
+                    <div style={styles.content}>
+                      {invitedUser?.eventImages.length > 0 ? (
+                        <>
+                          <Carousel>
+                            {invitedUser?.eventImages &&
+                            invitedUser?.eventImages.length > 0
+                              ? invitedUser?.eventImages.map((image, index) => {
+                                  return (
+                                    <Carousel.Item key={index}>
+                                      <img
+                                        className="d-block w-100"
+                                        src={`${url}/${image}`}
+                                        alt={`Slide ${index + 1}`}
+                                        style={{
+                                          height: "300px",
+                                          objectFit: "cover",
+                                        }} // Adjust styles as needed
+                                      />
+                                      {/* <Carousel.Caption>
                         <h3>{image.title || `Slide ${index + 1}`}</h3>
                         <p>{image.description || "Default description"}</p>
                       </Carousel.Caption> */}
-                                  </Carousel.Item>
-                                );
-                              })
-                            : ""}
-                        </Carousel>
-                      </>
-                    ) : (
-                      <p className="text-base text-center font-weight-bold text-secondary mb-0 mt-3">
-                        No Images Found!
+                                    </Carousel.Item>
+                                  );
+                                })
+                              : ""}
+                          </Carousel>
+                        </>
+                      ) : (
+                        <p className="text-base text-center font-weight-bold text-secondary mb-0 mt-3">
+                          No Images Found!
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </Tab>
+                {/* HISTORY TAB  */}
+                <Tab
+                  eventKey="contact"
+                  title={<span className="custom-tab-title">History</span>}
+                >
+                  <div style={styles.card} className="mt-4">
+                    <div style={styles.header}>
+                      <h5 style={{ color: "#fff", margin: 0 }}>
+                        History Details
+                      </h5>
+                    </div>
+                    <div>
+                      <p className="text-base text-center font-weight-bold text-secondary mb-3 mt-3">
+                        No History Found!
                       </p>
-                    )}
+                    </div>
                   </div>
-                </div>
-              </Tab>
-              {/* HISTORY TAB  */}
-              <Tab
-                eventKey="contact"
-                title={<span className="custom-tab-title">History</span>}
-              >
-                <div style={styles.card} className="mt-4">
-                  <div style={styles.header}>
-                    <h5 style={{ color: "#fff", margin: 0 }}>
-                      History Details
-                    </h5>
-                  </div>
-                  <div>
-                    <p className="text-base text-center font-weight-bold text-secondary mb-3 mt-3">
-                      No History Found!
-                    </p>
-                  </div>
-                </div>
-              </Tab>
-            </Tabs>
+                </Tab>
+              </Tabs>
+            </div>
           </div>
         }
       />
@@ -620,8 +649,7 @@ function Eventlist(props) {
                           Events table
                         </h6>
                         <div className={`${Styles.inpfilter}`}>
-                        
-                           <DatePicker
+                          <DatePicker
                             className={` ${Styles.inpdate}`}
                             selectsRange
                             startDate={startDate}
@@ -655,201 +683,189 @@ function Eventlist(props) {
                       </div>
                     </div>
 
-                    {
-                      loading ? 
-                      (
-                        <>
-                         <Box
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                        height="50vh" // Full viewport height
-                      >
-                        <ThreeCircles
-                          visible={true}
-                          height="80"
-                          width="100"
-                          color="rgb(231,56,116)" // Change the color to your desired color
-                          ariaLabel="three-circles-loading"
-                          wrapperStyle={{}}
-                          wrapperClass=""
-                        />
-                      </Box>
-
-                        </>
-                      ) : 
-                      (
-                        <>
-                           <div className="card-body px-0 pb-2">
-                      <div className="table-responsive p-0 ">
-                        <table className="table align-items-center mb-0">
-                          <thead>
-                            <tr>
-                              <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ">
-                                Name
-                              </th>
-                              <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                Relation Type
-                              </th>
-                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                Event Type
-                              </th>
-                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                Created By
-                              </th>
-                              <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                Wishlist Count
-                              </th>
-                              <th className="text-start text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                Invited Users
-                              </th>
-                              <th className="text-secondary opacity-7">View</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {filteredEvents.length > 0 ? (
-                              filteredEvents.map((item, index) => {
-                                return (
-                                  <tr key={item?.data?.id}>
-                                    <td>
-                                      <div className=" px-2 py-1">
-                                        <div className=" flex-column justify-content-center">
-                                          <h6 className="mb-0 text-sm">
-                                            {item.data?.name
-                                              ? item.data?.name
-                                              : "--"}
-                                          </h6>
-                                        </div>
-                                      </div>
-                                    </td>
-                                    <td className="align-middle text-center">
-                                      <p className="text-xs font-weight-bold text-secondary  mb-0">
-                                        {item.data?.relationType}
-                                      </p>
-                                    </td>
-                                    <td className="align-middle text-center">
-                                      <p className="text-xs font-weight-bold text-secondary mb-0">
-                                        {item.data?.eventType}
-                                      </p>
-                                    </td>
-                                    <td className="align-middle text-center text-sm">
-                                      <span className="badge badge-sm bg-gradient-success">
-                                        {item.data?.useridName}
-                                      </span>
-                                    </td>
-                                    <td className="align-middle text-center">
-                                      <p className="text-xs font-weight-bold  text-secondary mb-0">
-                                        wishlist count
-                                      </p>
-                                    </td>
-                                    <td className="align-middle text-center">
-                                      <p className="text-xs font-weight-bold  text-secondary mb-0">
-                                        {item.data?.invitedUsers?.length}
-                                      </p>
-                                    </td>
-                                    <td className="align-middle text-center text-sm">
-                                      <span>
-                                        <MdVisibility
-                                          className={`${Styles.delicon}`}
-                                          onClick={(e) =>
-                                            handleShow(
-                                              e,
-                                              item?.data,
-                                              item?.data?.eventId
-                                            )
-                                          }
-                                        />
-                                      </span>
+                    {loading ? (
+                      <>
+                        <Box
+                          display="flex"
+                          justifyContent="center"
+                          alignItems="center"
+                          height="50vh" // Full viewport height
+                        >
+                          <ThreeCircles
+                            visible={true}
+                            height="80"
+                            width="100"
+                            color="rgb(231,56,116)" // Change the color to your desired color
+                            ariaLabel="three-circles-loading"
+                            wrapperStyle={{}}
+                            wrapperClass=""
+                          />
+                        </Box>
+                      </>
+                    ) : (
+                      <>
+                        <div className="card-body px-0 pb-2">
+                          <div className="table-responsive p-0 ">
+                            <table className="table align-items-center mb-0">
+                              <thead>
+                                <tr>
+                                  <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ">
+                                    Name
+                                  </th>
+                                  <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                    Relation Type
+                                  </th>
+                                  <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Event Type
+                                  </th>
+                                  <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Created By
+                                  </th>
+                                  <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Wishlist Count
+                                  </th>
+                                  <th className="text-start text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    Invited Users
+                                  </th>
+                                  <th className="text-secondary opacity-7">
+                                    View
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {filteredEvents.length > 0 ? (
+                                  currentData.map((item, index) => {
+                                    return (
+                                      <tr key={item?.data?.id}>
+                                        <td>
+                                          <div className=" px-2 py-1">
+                                            <div className=" flex-column justify-content-center">
+                                              <h6 className="mb-0 text-sm">
+                                                {item.data?.name
+                                                  ? item.data?.name
+                                                  : "--"}
+                                              </h6>
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td className="align-middle text-center">
+                                          <p className="text-xs font-weight-bold text-secondary  mb-0">
+                                            {item.data?.relationType}
+                                          </p>
+                                        </td>
+                                        <td className="align-middle text-center">
+                                          <p className="text-xs font-weight-bold text-secondary mb-0">
+                                            {item.data?.eventType}
+                                          </p>
+                                        </td>
+                                        <td className="align-middle text-center text-sm">
+                                          <span className="badge badge-sm bg-gradient-success">
+                                            {item.data?.useridName}
+                                          </span>
+                                        </td>
+                                        <td className="align-middle text-center">
+                                          <p className="text-xs font-weight-bold  text-secondary mb-0">
+                                            wishlist count
+                                          </p>
+                                        </td>
+                                        <td className="align-middle text-center">
+                                          <p className="text-xs font-weight-bold  text-secondary mb-0">
+                                            {item.data?.invitedUsers?.length}
+                                          </p>
+                                        </td>
+                                        <td className="align-middle text-center text-sm">
+                                          <span>
+                                            <MdVisibility
+                                              className={`${Styles.delicon}`}
+                                              onClick={(e) =>
+                                                handleShow(
+                                                  e,
+                                                  item?.data,
+                                                  item?.data?.eventId
+                                                )
+                                              }
+                                            />
+                                          </span>
+                                        </td>
+                                      </tr>
+                                    );
+                                  })
+                                ) : (
+                                  <tr className="">
+                                    <td colSpan="6" className="text-center">
+                                      No Data Found!
                                     </td>
                                   </tr>
-                                );
-                              })
-                            ) : (
-                              <tr className="">
-                                <td colSpan="6" className="text-center">
-                                  No Data Found!
-                                </td>
-                              </tr>
-                            )}
-                          </tbody>
-                        </table>
-                        {/* PAGINATION  */}
-                      </div>
-                    </div>
-                        
-                        
-                        </>
-                      )
-                    }
+                                )}
+                              </tbody>
+                            </table>
+                            {/* PAGINATION  */}
+                          </div>
+                        </div>
 
-                 
+                        {/* PAGINATION  */}
+                        <nav
+                          aria-label="Page navigation example"
+                          className="mt-3"
+                        >
+                          <ul className="pagination justify-content-end pg-11 ">
+                            <li
+                              className={`page-item ${
+                                currentPage === 1 ? "disabled" : ""
+                              }`}
+                            >
+                              <a
+                                className="page-link"
+                                href="#"
+                                aria-label="Previous"
+                                onClick={() =>
+                                  handlePageChange(currentPage - 1)
+                                }
+                              >
+                                <span aria-hidden="true">&laquo;</span>
+                              </a>
+                            </li>
+
+                            {Array.from({ length: totalPages }, (_, index) => (
+                              <li
+                                key={index}
+                                className={`page-item ${
+                                  currentPage === index + 1 ? "active" : ""
+                                }`}
+                              >
+                                <a
+                                  className="page-link"
+                                  href="#"
+                                  onClick={() => handlePageChange(index + 1)}
+                                >
+                                  {index + 1}
+                                </a>
+                              </li>
+                            ))}
+
+                            <li
+                              className={`page-item ${
+                                currentPage === totalPages ? "disabled" : ""
+                              }`}
+                            >
+                              <a
+                                className="page-link"
+                                href="#"
+                                aria-label="Next"
+                                onClick={() =>
+                                  handlePageChange(currentPage + 1)
+                                }
+                              >
+                                <span aria-hidden="true">&raquo;</span>
+                              </a>
+                            </li>
+                          </ul>
+                        </nav>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
-
-              <footer className="footer py-4  ">
-                <div className="container-fluid">
-                  <div className="row align-items-center justify-content-lg-between">
-                    <div className="col-lg-6 mb-lg-0 mb-4">
-                      <div className="copyright text-center text-sm text-muted text-lg-start">
-                        ©{" "}
-                        <script>
-                          document.write(new Date().getFullYear())
-                        </script>
-                        , made with <i className="fa fa-heart"></i> by
-                        <a
-                          href="https://www.creative-tim.com"
-                          className="font-weight-bold"
-                          target="_blank"
-                        >
-                          Creative Tim
-                        </a>
-                        for a better web.
-                      </div>
-                    </div>
-                    <div className="col-lg-6">
-                      <ul className="nav nav-footer justify-content-center justify-content-lg-end">
-                        <li className="nav-item">
-                          <a
-                            href="https://www.creative-tim.com"
-                            className="nav-link text-muted"
-                            target="_blank"
-                          >
-                            Creative Tim
-                          </a>
-                        </li>
-                        <li className="nav-item">
-                          <a
-                            href="https://www.creative-tim.com/presentation"
-                            className="nav-link text-muted"
-                            target="_blank"
-                          >
-                            About Us
-                          </a>
-                        </li>
-                        <li className="nav-item">
-                          <a
-                            href="https://www.creative-tim.com/blog"
-                            className="nav-link text-muted"
-                            target="_blank"
-                          >
-                            Blog
-                          </a>
-                        </li>
-                        <li className="nav-item">
-                          <a
-                            href="https://www.creative-tim.com/license"
-                            className="nav-link pe-0 text-muted"
-                            target="_blank"
-                          >
-                            License
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </footer>
             </div>
           </div>
         </div>
@@ -859,4 +875,3 @@ function Eventlist(props) {
 }
 
 export default Eventlist;
-

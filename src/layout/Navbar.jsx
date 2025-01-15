@@ -85,19 +85,19 @@ function Navbar() {
             <li className="nav-item">
             <NavLink to="/subscription" className="nav-link text-white">
                 <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                  <i className="material-icons opacity-10">view_in_ar</i>
+                  <i className="material-icons opacity-10">login</i>
                 </div>
                 <span className="nav-link-text ms-1">Subscription</span>
                 </NavLink>
             </li>
 
             <li className="nav-item">
-              <a className="nav-link text-white">
+            <NavLink to="/payments" className="nav-link text-white">
                 <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                  <i className="material-icons opacity-10">person</i>
+                  <i className="material-icons opacity-10">table_view</i>
                 </div>
-                <span className="nav-link-text ms-1">Settings</span>
-              </a>
+                <span className="nav-link-text ms-1">Payments</span>
+              </NavLink>
             </li>
 
             <li className="nav-item" onClick={handlelogout}>
